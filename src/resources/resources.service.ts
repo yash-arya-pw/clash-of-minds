@@ -53,6 +53,7 @@ export class ResourcesService {
         return {
           _id: mapping._id.toString(),
           assetId: resource._id.toString(),
+          name: resource.name,
           index: mapping.index,
           imageURL: image ? image.url : '',
           level: resource.level,
