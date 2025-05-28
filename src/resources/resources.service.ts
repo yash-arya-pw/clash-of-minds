@@ -8,6 +8,7 @@ import { Image, ImageDocument } from './schemas/image.schema';
 interface ResourceData {
   _id: string;
   assetId: string;
+  name: string;
   index: number[];
   imageURL: string;
   level: number;
