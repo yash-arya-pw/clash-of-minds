@@ -26,10 +26,10 @@ export class User {
   @Prop({ default: 0 })
   trophies: number;
 
-  @Prop({ default: 0 })
+  @Prop({ default: 100 })
   gold: number;
 
-  @Prop({ default: 0 })
+  @Prop({ default: 100 })
   elixir: number;
 }
 
