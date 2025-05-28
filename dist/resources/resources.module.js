@@ -28,7 +28,7 @@ exports.ResourcesModule = ResourcesModule = __decorate([
         ],
         controllers: [resources_controller_1.ResourcesController],
         providers: [resources_service_1.ResourcesService],
-        exports: [mongoose_1.MongooseModule],
+        exports: [mongoose_1.MongooseModule, resources_service_1.ResourcesService],
     })
 ], ResourcesModule);
 //# sourceMappingURL=resources.module.js.map

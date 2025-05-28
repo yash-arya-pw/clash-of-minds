@@ -13,6 +13,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import configuration from './config/configuration';
 import { ResourcesModule } from './resources/resources.module';
 import { TroopsModule } from './troops/troops.module';
+import { AttackModule } from './attack/attack.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TroopsModule } from './troops/troops.module';
     }),
     ResourcesModule,
     TroopsModule,
+    AttackModule,
   ],
   controllers: [AppController, AuthController, UserController],
   providers: [AppService, AuthService, JwtStrategy],

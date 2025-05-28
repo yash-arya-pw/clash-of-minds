@@ -16,6 +16,6 @@ import { Image, ImageSchema } from './schemas/image.schema';
   ],
   controllers: [ResourcesController],
   providers: [ResourcesService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, ResourcesService],
 })
 export class ResourcesModule {} 
