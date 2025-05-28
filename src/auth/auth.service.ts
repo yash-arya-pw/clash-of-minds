@@ -7,6 +7,7 @@ import { User, UserDocument } from '../user/user.schema';
 import { SignupDto, LoginDto } from './dto/auth.dto';
 import { Resource, ResourceDocument } from '../resources/schemas/resource.schema';
 import { UserResourceMapping, UserResourceMappingDocument } from '../resources/schemas/user-resource-mapping.schema';
+import { TroopsService } from '../troops/troops.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     @InjectModel(Resource.name) private resourceModel: Model<ResourceDocument>,
     @InjectModel(UserResourceMapping.name) private userResourceMappingModel: Model<UserResourceMappingDocument>,
     private jwtService: JwtService,
+    private troopsService: TroopsService,
   ) {}
 
   private async createInitialResourceMappings(userId: string) {
@@ -25,7 +27,7 @@ export class AuthService {
     const mappings = levelOneResources.map((resource, index) => ({
       userId: new Types.ObjectId(userId),
       assetId: resource._id,
-      index: [Math.floor(index / 10), index % 10], // Creates a 3xN grid layout
+      index: [Math.floor(index / 10), index % 10], // Creates a 10xN grid layout
     }));
 
     // Insert all mappings
@@ -54,6 +56,9 @@ export class AuthService {
 
     // Create initial resource mappings
     await this.createInitialResourceMappings(user._id.toString());
+
+    // Create initial troop mappings
+    await this.troopsService.createInitialTroopMappings(user._id.toString());
 
     // Generate JWT token
     const token = this.jwtService.sign({ userId: user._id });

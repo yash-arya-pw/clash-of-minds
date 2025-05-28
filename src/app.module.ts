@@ -12,6 +12,7 @@ import { UserController } from './user/user.controller';
 import { JwtStrategy } from './auth/jwt.strategy';
 import configuration from './config/configuration';
 import { ResourcesModule } from './resources/resources.module';
+import { TroopsModule } from './troops/troops.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ResourcesModule } from './resources/resources.module';
       inject: [ConfigService],
     }),
     ResourcesModule,
+    TroopsModule,
   ],
   controllers: [AppController, AuthController, UserController],
   providers: [AppService, AuthService, JwtStrategy],

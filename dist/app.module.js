@@ -21,6 +21,7 @@ const user_controller_1 = require("./user/user.controller");
 const jwt_strategy_1 = require("./auth/jwt.strategy");
 const configuration_1 = require("./config/configuration");
 const resources_module_1 = require("./resources/resources.module");
+const troops_module_1 = require("./troops/troops.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -49,6 +50,7 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
             resources_module_1.ResourcesModule,
+            troops_module_1.TroopsModule,
         ],
         controllers: [app_controller_1.AppController, auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [app_service_1.AppService, auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],

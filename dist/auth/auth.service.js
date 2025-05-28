@@ -21,12 +21,14 @@ const jwt_1 = require("@nestjs/jwt");
 const user_schema_1 = require("../user/user.schema");
 const resource_schema_1 = require("../resources/schemas/resource.schema");
 const user_resource_mapping_schema_1 = require("../resources/schemas/user-resource-mapping.schema");
+const troops_service_1 = require("../troops/troops.service");
 let AuthService = class AuthService {
-    constructor(userModel, resourceModel, userResourceMappingModel, jwtService) {
+    constructor(userModel, resourceModel, userResourceMappingModel, jwtService, troopsService) {
         this.userModel = userModel;
         this.resourceModel = resourceModel;
         this.userResourceMappingModel = userResourceMappingModel;
         this.jwtService = jwtService;
+        this.troopsService = troopsService;
     }
     async createInitialResourceMappings(userId) {
         const levelOneResources = await this.resourceModel.find({ level: 1 }).exec();
@@ -51,6 +53,7 @@ let AuthService = class AuthService {
             trophies: 0,
         });
         await this.createInitialResourceMappings(user._id.toString());
+        await this.troopsService.createInitialTroopMappings(user._id.toString());
         const token = this.jwtService.sign({ userId: user._id });
         return { token };
     }
@@ -77,6 +80,7 @@ exports.AuthService = AuthService = __decorate([
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        troops_service_1.TroopsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
