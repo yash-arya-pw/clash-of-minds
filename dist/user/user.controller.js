@@ -15,11 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_guard_1 = require("../auth/jwt.guard");
+const user_service_1 = require("./user.service");
+const update_user_dto_1 = require("./dto/update-user.dto");
 let UserController = class UserController {
+    constructor(userService) {
+        this.userService = userService;
+    }
     async getCurrentUser(req) {
         const user = req.user;
         const { password, ...userWithoutPassword } = user.toObject();
         return userWithoutPassword;
+    }
+    async updateUser(userId, updateUserDto) {
+        return this.userService.updateUser(userId, updateUserDto);
     }
 };
 exports.UserController = UserController;
@@ -31,7 +39,16 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getCurrentUser", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUser", null);
 exports.UserController = UserController = __decorate([
-    (0, common_1.Controller)('user')
+    (0, common_1.Controller)('user'),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

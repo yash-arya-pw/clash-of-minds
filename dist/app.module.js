@@ -10,20 +10,12 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
-const jwt_1 = require("@nestjs/jwt");
-const passport_1 = require("@nestjs/passport");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const auth_controller_1 = require("./auth/auth.controller");
-const auth_service_1 = require("./auth/auth.service");
-const user_schema_1 = require("./user/user.schema");
-const user_controller_1 = require("./user/user.controller");
-const jwt_strategy_1 = require("./auth/jwt.strategy");
-const configuration_1 = require("./config/configuration");
 const resources_module_1 = require("./resources/resources.module");
 const troops_module_1 = require("./troops/troops.module");
 const attack_module_1 = require("./attack/attack.module");
 const battle_module_1 = require("./battle/battle.module");
+const auth_module_1 = require("./auth/auth.module");
+const user_module_1 = require("./user/user.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,22 +24,11 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [configuration_1.default],
             }),
             mongoose_1.MongooseModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
-                    uri: configService.get('database.uri'),
-                }),
-                inject: [config_1.ConfigService],
-            }),
-            mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]),
-            passport_1.PassportModule,
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: async (configService) => ({
-                    secret: configService.get('jwt.secret') || 'your-secret-key',
-                    signOptions: { expiresIn: '24h' },
+                    uri: configService.get('MONGODB_URI'),
                 }),
                 inject: [config_1.ConfigService],
             }),
@@ -55,9 +36,9 @@ exports.AppModule = AppModule = __decorate([
             troops_module_1.TroopsModule,
             attack_module_1.AttackModule,
             battle_module_1.BattleModule,
+            auth_module_1.AuthModule,
+            user_module_1.UserModule,
         ],
-        controllers: [app_controller_1.AppController, auth_controller_1.AuthController, user_controller_1.UserController],
-        providers: [app_service_1.AppService, auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
