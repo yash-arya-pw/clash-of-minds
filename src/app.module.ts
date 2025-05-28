@@ -14,6 +14,7 @@ import configuration from './config/configuration';
 import { ResourcesModule } from './resources/resources.module';
 import { TroopsModule } from './troops/troops.module';
 import { AttackModule } from './attack/attack.module';
+import { BattleModule } from './battle/battle.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AttackModule } from './attack/attack.module';
     ResourcesModule,
     TroopsModule,
     AttackModule,
+    BattleModule,
   ],
   controllers: [AppController, AuthController, UserController],
   providers: [AppService, AuthService, JwtStrategy],

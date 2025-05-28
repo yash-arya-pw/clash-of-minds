@@ -43,6 +43,14 @@ __decorate([
     (0, mongoose_1.Prop)({ default: 0 }),
     __metadata("design:type", Number)
 ], User.prototype, "trophies", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 100 }),
+    __metadata("design:type", Number)
+], User.prototype, "gold", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 100 }),
+    __metadata("design:type", Number)
+], User.prototype, "elixir", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], User);
