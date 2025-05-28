@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Resource, ResourceDocument } from './schemas/resource.schema';
@@ -12,6 +12,16 @@ interface ResourceData {
   imageURL: string;
   level: number;
   health: number;
+}
+
+interface ResourcePosition {
+  resourceId: string;
+  newIndex: number[];
+}
+
+interface UpdatePositionsDto {
+  userId: string;
+  positions: ResourcePosition[];
 }
 
 @Injectable()
@@ -53,5 +63,56 @@ export class ResourcesService {
 
     // Filter out any null values from resources that weren't found
     return { base: base.filter((item): item is ResourceData => item !== null) };
+  }
+
+  async updateResourcePositions(updateDto: UpdatePositionsDto): Promise<UserResourceMapping[]> {
+    const { userId, positions } = updateDto;
+    const userIdObj = new Types.ObjectId(userId);
+
+    // Get all requested positions
+    const newPositions = positions.map(p => p.newIndex);
+
+    // Check for duplicates in the requested positions
+    const positionStrings = newPositions.map(pos => pos.join(','));
+    const uniquePositions = new Set(positionStrings);
+    if (uniquePositions.size !== positions.length) {
+      throw new ConflictException('Duplicate positions in request');
+    }
+
+    // Check if any of the new positions are already occupied by other resources
+    const existingMappings = await this.userResourceMappingModel.find({
+      userId: userIdObj,
+      index: { $in: newPositions },
+      assetId: { 
+        $nin: positions.map(p => new Types.ObjectId(p.resourceId))
+      }
+    }).exec();
+
+    if (existingMappings.length > 0) {
+      throw new ConflictException('One or more positions are already occupied');
+    }
+
+    // Update all resource positions
+    const updatePromises = positions.map(({ resourceId, newIndex }) =>
+      this.userResourceMappingModel.findOneAndUpdate(
+        {
+          assetId: new Types.ObjectId(resourceId),
+          userId: userIdObj,
+        },
+        {
+          $set: { index: newIndex },
+        },
+        { new: true },
+      ).exec()
+    );
+
+    const updatedMappings = await Promise.all(updatePromises);
+
+    // Check if any resources were not found
+    if (updatedMappings.some(mapping => !mapping)) {
+      throw new ConflictException('One or more resource mappings not found');
+    }
+
+    return updatedMappings;
   }
 } 

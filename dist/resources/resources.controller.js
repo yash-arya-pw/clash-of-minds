@@ -23,6 +23,12 @@ let ResourcesController = class ResourcesController {
     async getResourcesByUserId(userId) {
         return this.resourcesService.getResourcesByUserId(userId);
     }
+    async updateResourcePositions(userId, updateDto) {
+        return this.resourcesService.updateResourcePositions({
+            userId,
+            positions: updateDto.positions,
+        });
+    }
 };
 exports.ResourcesController = ResourcesController;
 __decorate([
@@ -33,6 +39,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ResourcesController.prototype, "getResourcesByUserId", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.Put)(':userId/positions'),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ResourcesController.prototype, "updateResourcePositions", null);
 exports.ResourcesController = ResourcesController = __decorate([
     (0, common_1.Controller)('resources'),
     __metadata("design:paramtypes", [resources_service_1.ResourcesService])

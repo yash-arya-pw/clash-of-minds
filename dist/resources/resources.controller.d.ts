@@ -7,11 +7,19 @@ interface ResourceData {
     level: number;
     health: number;
 }
+interface ResourcePosition {
+    resourceId: string;
+    newIndex: number[];
+}
+interface UpdatePositionsDto {
+    positions: ResourcePosition[];
+}
 export declare class ResourcesController {
     private readonly resourcesService;
     constructor(resourcesService: ResourcesService);
     getResourcesByUserId(userId: string): Promise<{
         base: ResourceData[];
     }>;
+    updateResourcePositions(userId: string, updateDto: UpdatePositionsDto): Promise<import("./schemas/user-resource-mapping.schema").UserResourceMapping[]>;
 }
 export {};

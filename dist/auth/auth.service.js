@@ -33,7 +33,7 @@ let AuthService = class AuthService {
         const mappings = levelOneResources.map((resource, index) => ({
             userId: new mongoose_2.Types.ObjectId(userId),
             assetId: resource._id,
-            index: [Math.floor(index / 3), index % 3],
+            index: [Math.floor(index / 10), index % 10],
         }));
         await this.userResourceMappingModel.insertMany(mappings);
     }

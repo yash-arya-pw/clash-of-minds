@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Put, Param, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ResourcesService } from './resources.service';
 
@@ -11,6 +11,15 @@ interface ResourceData {
   health: number;
 }
 
+interface ResourcePosition {
+  resourceId: string;
+  newIndex: number[];
+}
+
+interface UpdatePositionsDto {
+  positions: ResourcePosition[];
+}
+
 @Controller('resources')
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
@@ -21,5 +30,17 @@ export class ResourcesController {
     @Param('userId') userId: string,
   ): Promise<{ base: ResourceData[] }> {
     return this.resourcesService.getResourcesByUserId(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':userId/positions')
+  async updateResourcePositions(
+    @Param('userId') userId: string,
+    @Body() updateDto: UpdatePositionsDto,
+  ) {
+    return this.resourcesService.updateResourcePositions({
+      userId,
+      positions: updateDto.positions,
+    });
   }
 } 

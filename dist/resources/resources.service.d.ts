@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { ResourceDocument } from './schemas/resource.schema';
-import { UserResourceMappingDocument } from './schemas/user-resource-mapping.schema';
+import { UserResourceMapping, UserResourceMappingDocument } from './schemas/user-resource-mapping.schema';
 import { ImageDocument } from './schemas/image.schema';
 interface ResourceData {
     _id: string;
@@ -10,6 +10,14 @@ interface ResourceData {
     level: number;
     health: number;
 }
+interface ResourcePosition {
+    resourceId: string;
+    newIndex: number[];
+}
+interface UpdatePositionsDto {
+    userId: string;
+    positions: ResourcePosition[];
+}
 export declare class ResourcesService {
     private resourceModel;
     private userResourceMappingModel;
@@ -18,5 +26,6 @@ export declare class ResourcesService {
     getResourcesByUserId(userId: string): Promise<{
         base: ResourceData[];
     }>;
+    updateResourcePositions(updateDto: UpdatePositionsDto): Promise<UserResourceMapping[]>;
 }
 export {};
