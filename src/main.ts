@@ -2,14 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   
-  // Enable CORS for all origins
+  // Configure CORS with specific options
   app.enableCors({
-    origin: '*',
+    origin: true, // Reflects the request origin
+    credentials: true, // Required for cookies, authorization headers with HTTPS
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
-    credentials: true,
+    allowedHeaders: 'Origin,Accept,Authorization,Content-Type,X-Requested-With',
+    exposedHeaders: 'Access-Control-Allow-Origin',
   });
 
   await app.listen(process.env.PORT ?? 3000);
