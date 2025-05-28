@@ -25,6 +25,12 @@ export class User {
 
   @Prop({ default: 0 })
   trophies: number;
+
+  @Prop({ default: 0 })
+  gold: number;
+
+  @Prop({ default: 0 })
+  elixir: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User); 
