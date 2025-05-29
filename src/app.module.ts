@@ -8,6 +8,7 @@ import { BattleModule } from './battle/battle.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
+//app module
 @Module({
   imports: [
     ConfigModule.forRoot({
