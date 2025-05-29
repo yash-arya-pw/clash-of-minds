@@ -73,30 +73,41 @@ export class ResourcesService {
     const { userId, positions } = updateDto;
     const userIdObj = new Types.ObjectId(userId);
 
-    // Get all requested positions
-    const newPositions = positions.map(p => p.newIndex);
-
-    // Check for duplicates in the requested positions
-    const positionStrings = newPositions.map(pos => pos.join(','));
-    const uniquePositions = new Set(positionStrings);
-    if (uniquePositions.size !== positions.length) {
-      throw new ConflictException('Duplicate positions in request');
-    }
-
-    // Check if any of the new positions are already occupied by other resources
-    const existingMappings = await this.userResourceMappingModel.find({
+    // First, fetch all existing mappings for this user
+    const allUserMappings = await this.userResourceMappingModel.find({
       userId: userIdObj,
-      index: { $in: newPositions },
-      assetId: { 
-        $in: positions.map(p => new Types.ObjectId(p.resourceId))
-      }
-    }).exec();
+    }).lean().exec();
 
-    if (existingMappings.length > 0) {
-      throw new ConflictException('One or more positions are already occupied');
+    // Create a map of existing positions
+    const existingPositionsMap = new Map();
+    allUserMappings.forEach(mapping => {
+      existingPositionsMap.set(mapping.assetId.toString(), mapping.index);
+    });
+
+    // Create a map to check for position conflicts
+    const newPositionsMap = new Map();
+    
+    // Validate positions
+    for (const { resourceId, newIndex } of positions) {
+      // Check if the resource exists for this user
+      const existingPosition = existingPositionsMap.get(resourceId);
+      if (!existingPosition) {
+        throw new ConflictException(`Resource with ID ${resourceId} not found for this user`);
+      }
+
+      // Convert position to string for comparison
+      const positionKey = newIndex.join(',');
+      
+      // Check if this position is already taken in new positions
+      if (newPositionsMap.has(positionKey)) {
+        throw new ConflictException('Duplicate positions in request');
+      }
+
+      // Add to new positions map
+      newPositionsMap.set(positionKey, resourceId);
     }
 
-    // Update all resource positions
+    // If we reach here, all positions are valid. Perform the updates
     const updatePromises = positions.map(({ resourceId, newIndex }) =>
       this.userResourceMappingModel.findOneAndUpdate(
         {
@@ -112,9 +123,9 @@ export class ResourcesService {
 
     const updatedMappings = await Promise.all(updatePromises);
 
-    // Check if any resources were not found
+    // Final validation to ensure all updates were successful
     if (updatedMappings.some(mapping => !mapping)) {
-      throw new ConflictException('One or more resource mappings not found');
+      throw new ConflictException('One or more resource mappings failed to update');
     }
 
     return updatedMappings;

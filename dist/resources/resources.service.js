@@ -52,21 +52,24 @@ let ResourcesService = class ResourcesService {
     async updateResourcePositions(updateDto) {
         const { userId, positions } = updateDto;
         const userIdObj = new mongoose_2.Types.ObjectId(userId);
-        const newPositions = positions.map(p => p.newIndex);
-        const positionStrings = newPositions.map(pos => pos.join(','));
-        const uniquePositions = new Set(positionStrings);
-        if (uniquePositions.size !== positions.length) {
-            throw new common_1.ConflictException('Duplicate positions in request');
-        }
-        const existingMappings = await this.userResourceMappingModel.find({
+        const allUserMappings = await this.userResourceMappingModel.find({
             userId: userIdObj,
-            index: { $in: newPositions },
-            assetId: {
-                $in: positions.map(p => new mongoose_2.Types.ObjectId(p.resourceId))
+        }).lean().exec();
+        const existingPositionsMap = new Map();
+        allUserMappings.forEach(mapping => {
+            existingPositionsMap.set(mapping.assetId.toString(), mapping.index);
+        });
+        const newPositionsMap = new Map();
+        for (const { resourceId, newIndex } of positions) {
+            const existingPosition = existingPositionsMap.get(resourceId);
+            if (!existingPosition) {
+                throw new common_1.ConflictException(`Resource with ID ${resourceId} not found for this user`);
             }
-        }).exec();
-        if (existingMappings.length > 0) {
-            throw new common_1.ConflictException('One or more positions are already occupied');
+            const positionKey = newIndex.join(',');
+            if (newPositionsMap.has(positionKey)) {
+                throw new common_1.ConflictException('Duplicate positions in request');
+            }
+            newPositionsMap.set(positionKey, resourceId);
         }
         const updatePromises = positions.map(({ resourceId, newIndex }) => this.userResourceMappingModel.findOneAndUpdate({
             assetId: new mongoose_2.Types.ObjectId(resourceId),
@@ -76,7 +79,7 @@ let ResourcesService = class ResourcesService {
         }, { new: true }).exec());
         const updatedMappings = await Promise.all(updatePromises);
         if (updatedMappings.some(mapping => !mapping)) {
-            throw new common_1.ConflictException('One or more resource mappings not found');
+            throw new common_1.ConflictException('One or more resource mappings failed to update');
         }
         return updatedMappings;
     }
