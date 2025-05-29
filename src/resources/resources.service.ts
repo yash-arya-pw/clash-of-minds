@@ -117,4 +117,43 @@ export class ResourcesService {
 
     return updatedMappings;
   }
+
+  async upgradeResource(userId: string, assetId: string): Promise<UserResourceMapping> {
+    const userIdObj = new Types.ObjectId(userId);
+    const assetIdObj = new Types.ObjectId(assetId);
+
+    // Find the current resource
+    const currentResource = await this.resourceModel.findById(assetIdObj).exec();
+    if (!currentResource) {
+      throw new ConflictException('Resource not found');
+    }
+
+    // Find the next level resource with the same name
+    const nextLevelResource = await this.resourceModel.findOne({
+      name: currentResource.name,
+      level: currentResource.level + 1
+    }).exec();
+
+    if (!nextLevelResource) {
+      throw new ConflictException('No upgrade available for this resource');
+    }
+
+    // Update the user resource mapping with the new assetId
+    const updatedMapping = await this.userResourceMappingModel.findOneAndUpdate(
+      {
+        userId: userIdObj,
+        assetId: assetIdObj
+      },
+      {
+        $set: { assetId: nextLevelResource._id }
+      },
+      { new: true }
+    ).exec();
+
+    if (!updatedMapping) {
+      throw new ConflictException('Resource mapping not found');
+    }
+
+    return updatedMapping;
+  }
 } 

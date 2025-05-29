@@ -29,6 +29,9 @@ let ResourcesController = class ResourcesController {
             positions: updateDto.positions,
         });
     }
+    async upgradeResource(userId, upgradeDto) {
+        return this.resourcesService.upgradeResource(userId, upgradeDto.assetId);
+    }
 };
 exports.ResourcesController = ResourcesController;
 __decorate([
@@ -48,6 +51,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ResourcesController.prototype, "updateResourcePositions", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.Put)(':userId/upgrade'),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ResourcesController.prototype, "upgradeResource", null);
 exports.ResourcesController = ResourcesController = __decorate([
     (0, common_1.Controller)('resources'),
     __metadata("design:paramtypes", [resources_service_1.ResourcesService])

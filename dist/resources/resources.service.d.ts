@@ -28,5 +28,6 @@ export declare class ResourcesService {
         base: ResourceData[];
     }>;
     updateResourcePositions(updateDto: UpdatePositionsDto): Promise<UserResourceMapping[]>;
+    upgradeResource(userId: string, assetId: string): Promise<UserResourceMapping>;
 }
 export {};

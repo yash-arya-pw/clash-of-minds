@@ -79,6 +79,31 @@ let ResourcesService = class ResourcesService {
         }
         return updatedMappings;
     }
+    async upgradeResource(userId, assetId) {
+        const userIdObj = new mongoose_2.Types.ObjectId(userId);
+        const assetIdObj = new mongoose_2.Types.ObjectId(assetId);
+        const currentResource = await this.resourceModel.findById(assetIdObj).exec();
+        if (!currentResource) {
+            throw new common_1.ConflictException('Resource not found');
+        }
+        const nextLevelResource = await this.resourceModel.findOne({
+            name: currentResource.name,
+            level: currentResource.level + 1
+        }).exec();
+        if (!nextLevelResource) {
+            throw new common_1.ConflictException('No upgrade available for this resource');
+        }
+        const updatedMapping = await this.userResourceMappingModel.findOneAndUpdate({
+            userId: userIdObj,
+            assetId: assetIdObj
+        }, {
+            $set: { assetId: nextLevelResource._id }
+        }, { new: true }).exec();
+        if (!updatedMapping) {
+            throw new common_1.ConflictException('Resource mapping not found');
+        }
+        return updatedMapping;
+    }
 };
 exports.ResourcesService = ResourcesService;
 exports.ResourcesService = ResourcesService = __decorate([

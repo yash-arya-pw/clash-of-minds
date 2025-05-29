@@ -14,6 +14,9 @@ interface ResourcePosition {
 interface UpdatePositionsDto {
     positions: ResourcePosition[];
 }
+interface UpgradeResourceDto {
+    assetId: string;
+}
 export declare class ResourcesController {
     private readonly resourcesService;
     constructor(resourcesService: ResourcesService);
@@ -21,5 +24,6 @@ export declare class ResourcesController {
         base: ResourceData[];
     }>;
     updateResourcePositions(userId: string, updateDto: UpdatePositionsDto): Promise<import("./schemas/user-resource-mapping.schema").UserResourceMapping[]>;
+    upgradeResource(userId: string, upgradeDto: UpgradeResourceDto): Promise<import("./schemas/user-resource-mapping.schema").UserResourceMapping>;
 }
 export {};

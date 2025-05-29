@@ -20,6 +20,10 @@ interface UpdatePositionsDto {
   positions: ResourcePosition[];
 }
 
+interface UpgradeResourceDto {
+  assetId: string;
+}
+
 @Controller('resources')
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
@@ -42,5 +46,14 @@ export class ResourcesController {
       userId,
       positions: updateDto.positions,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':userId/upgrade')
+  async upgradeResource(
+    @Param('userId') userId: string,
+    @Body() upgradeDto: UpgradeResourceDto,
+  ) {
+    return this.resourcesService.upgradeResource(userId, upgradeDto.assetId);
   }
 } 
