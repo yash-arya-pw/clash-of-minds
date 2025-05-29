@@ -18,7 +18,7 @@ export class AttackService {
     // Find a random user excluding the attacker
     const users = await this.userModel
       .find({ _id: { $ne: excludeUserId } })
-      .select('name trophies')
+      .select('name trophies gold elixir')
       .exec();
 
     if (users.length === 0) {
@@ -40,6 +40,8 @@ export class AttackService {
         id: targetUser._id.toString(),
         name: targetUser.name,
         trophies: targetUser.trophies,
+        gold: targetUser.gold,
+        elixir: targetUser.elixir,
       },
       base: {
         resources: resources.base,
