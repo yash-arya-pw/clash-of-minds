@@ -52,6 +52,8 @@ export class AuthService {
       password: hashedPassword,
       ...rest,
       trophies: 0,
+      gold: 100,
+      elixir: 100,
     });
 
     // Create initial resource mappings

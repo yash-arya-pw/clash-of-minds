@@ -51,6 +51,8 @@ let AuthService = class AuthService {
             password: hashedPassword,
             ...rest,
             trophies: 0,
+            gold: 100,
+            elixir: 100,
         });
         await this.createInitialResourceMappings(user._id.toString());
         await this.troopsService.createInitialTroopMappings(user._id.toString());
