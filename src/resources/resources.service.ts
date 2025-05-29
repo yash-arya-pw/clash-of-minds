@@ -88,7 +88,7 @@ export class ResourcesService {
       userId: userIdObj,
       index: { $in: newPositions },
       assetId: { 
-        $nin: positions.map(p => new Types.ObjectId(p.resourceId))
+        $in: positions.map(p => new Types.ObjectId(p.resourceId))
       }
     }).exec();
 

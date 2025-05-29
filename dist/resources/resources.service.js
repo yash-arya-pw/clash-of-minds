@@ -62,7 +62,7 @@ let ResourcesService = class ResourcesService {
             userId: userIdObj,
             index: { $in: newPositions },
             assetId: {
-                $nin: positions.map(p => new mongoose_2.Types.ObjectId(p.resourceId))
+                $in: positions.map(p => new mongoose_2.Types.ObjectId(p.resourceId))
             }
         }).exec();
         if (existingMappings.length > 0) {
