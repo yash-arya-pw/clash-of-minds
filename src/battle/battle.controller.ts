@@ -10,4 +10,4 @@ export class BattleController {
   async processBattleResult(@Body() battleResult: BattleResultDto) {
     return this.battleService.processBattleResult(battleResult);
   }
-} 
+}

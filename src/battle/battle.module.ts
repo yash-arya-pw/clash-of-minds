@@ -15,4 +15,4 @@ import { User, UserSchema } from '../user/user.schema';
   controllers: [BattleController],
   providers: [BattleService],
 })
-export class BattleModule {} 
+export class BattleModule { }
