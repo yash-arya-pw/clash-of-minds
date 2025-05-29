@@ -27,7 +27,10 @@ export class AuthService {
     const mappings = levelOneResources.map((resource, index) => ({
       userId: new Types.ObjectId(userId),
       assetId: resource._id,
-      index: [Math.floor(index / 10), index % 10], // Creates a 10xN grid layout
+      index:
+        resource.name === 'Study Hall'
+          ? [5, 5]
+          : [Math.floor(index / 10), index % 10],
     }));
 
     // Insert all mappings
