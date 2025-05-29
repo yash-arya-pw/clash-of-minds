@@ -1,0 +1,93 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ResourcesService = void 0;
+const common_1 = require("@nestjs/common");
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
+const resource_schema_1 = require("./schemas/resource.schema");
+const user_resource_mapping_schema_1 = require("./schemas/user-resource-mapping.schema");
+const image_schema_1 = require("./schemas/image.schema");
+let ResourcesService = class ResourcesService {
+    constructor(resourceModel, userResourceMappingModel, imageModel) {
+        this.resourceModel = resourceModel;
+        this.userResourceMappingModel = userResourceMappingModel;
+        this.imageModel = imageModel;
+    }
+    async getResourcesByUserId(userId) {
+        const userIdObj = new mongoose_2.Types.ObjectId(userId);
+        const userResources = await this.userResourceMappingModel
+            .find({ userId: userIdObj })
+            .sort({ 'index.0': 1, 'index.1': 1 })
+            .exec();
+        const base = await Promise.all(userResources.map(async (mapping) => {
+            const resource = await this.resourceModel.findById(mapping.assetId).exec();
+            if (!resource)
+                return null;
+            const image = await this.imageModel.findById(resource.imageId).exec();
+            return {
+                _id: mapping._id.toString(),
+                assetId: resource._id.toString(),
+                name: resource.name,
+                index: mapping.index,
+                imageURL: image ? image.url : '',
+                level: resource.level,
+                health: resource.health,
+            };
+        }));
+        return { base: base.filter((item) => item !== null) };
+    }
+    async updateResourcePositions(updateDto) {
+        const { userId, positions } = updateDto;
+        const userIdObj = new mongoose_2.Types.ObjectId(userId);
+        const newPositions = positions.map(p => p.newIndex);
+        const positionStrings = newPositions.map(pos => pos.join(','));
+        const uniquePositions = new Set(positionStrings);
+        if (uniquePositions.size !== positions.length) {
+            throw new common_1.ConflictException('Duplicate positions in request');
+        }
+        const existingMappings = await this.userResourceMappingModel.find({
+            userId: userIdObj,
+            index: { $in: newPositions },
+            assetId: {
+                $nin: positions.map(p => new mongoose_2.Types.ObjectId(p.resourceId))
+            }
+        }).exec();
+        if (existingMappings.length > 0) {
+            throw new common_1.ConflictException('One or more positions are already occupied');
+        }
+        const updatePromises = positions.map(({ resourceId, newIndex }) => this.userResourceMappingModel.findOneAndUpdate({
+            assetId: new mongoose_2.Types.ObjectId(resourceId),
+            userId: userIdObj,
+        }, {
+            $set: { index: newIndex },
+        }, { new: true }).exec());
+        const updatedMappings = await Promise.all(updatePromises);
+        if (updatedMappings.some(mapping => !mapping)) {
+            throw new common_1.ConflictException('One or more resource mappings not found');
+        }
+        return updatedMappings;
+    }
+};
+exports.ResourcesService = ResourcesService;
+exports.ResourcesService = ResourcesService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(resource_schema_1.Resource.name)),
+    __param(1, (0, mongoose_1.InjectModel)(user_resource_mapping_schema_1.UserResourceMapping.name)),
+    __param(2, (0, mongoose_1.InjectModel)(image_schema_1.Image.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model])
+], ResourcesService);
+//# sourceMappingURL=resources.service.js.map
