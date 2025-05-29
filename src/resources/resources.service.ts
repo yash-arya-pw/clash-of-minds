@@ -13,6 +13,7 @@ interface ResourceData {
   imageURL: string;
   level: number;
   health: number;
+  costToUpgrade: number;
 }
 
 interface ResourcePosition {
@@ -59,6 +60,7 @@ export class ResourcesService {
           imageURL: image ? image.url : '',
           level: resource.level,
           health: resource.health,
+          costToUpgrade: resource.cost,
         };
       })
     );
