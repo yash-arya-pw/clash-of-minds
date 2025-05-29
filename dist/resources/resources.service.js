@@ -44,6 +44,7 @@ let ResourcesService = class ResourcesService {
                 imageURL: image ? image.url : '',
                 level: resource.level,
                 health: resource.health,
+                costToUpgrade: resource.cost,
             };
         }));
         return { base: base.filter((item) => item !== null) };

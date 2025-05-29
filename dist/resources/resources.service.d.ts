@@ -10,6 +10,7 @@ interface ResourceData {
     imageURL: string;
     level: number;
     health: number;
+    costToUpgrade: number;
 }
 interface ResourcePosition {
     resourceId: string;
