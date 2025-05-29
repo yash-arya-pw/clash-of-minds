@@ -162,4 +162,19 @@ export class QuizAttemptService {
       })),
     };
   }
+
+  async getQuizzesNotTakenByUser(userId: string) {
+    // 1. Get quiz IDs that the user has already attempted
+    const attemptedQuizIds = await this.attemptModel
+      .find({ user: userId })
+      .distinct('quiz');
+
+    // 2. Fetch quizzes not in the attempted list
+    const quizzes = await this.quizModel
+      .find({ _id: { $nin: attemptedQuizIds } })
+      .select('title description') // add more fields if needed
+      .lean();
+
+    return quizzes;
+  }
 }

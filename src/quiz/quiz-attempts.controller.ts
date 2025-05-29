@@ -54,4 +54,10 @@ export class QuizAttemptsController {
     const userId = req.user._id;
     return this.quizAttemptService.getAttemptDetails(userId, quizId);
   }
+
+  @Get('/not-attempted')
+  getQuizzesNotAttempted(@Request() req) {
+    const userId = req.user._id;
+    return this.quizAttemptService.getQuizzesNotTakenByUser(userId);
+  }
 }

@@ -7,6 +7,8 @@ import { AttackModule } from './attack/attack.module';
 import { BattleModule } from './battle/battle.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { Quiz } from './quiz/schemas/quiz.schema';
+import { QuizModule } from './quiz/quiz.module';
 
 //app module
 @Module({
@@ -27,6 +29,7 @@ import { UserModule } from './user/user.module';
     BattleModule,
     AuthModule,
     UserModule,
+    QuizModule,
   ],
 })
 export class AppModule {}

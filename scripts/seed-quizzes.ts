@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { QuizSchema } from '../src/quiz/schemas/quiz.schema';
 import { QuestionSchema } from '../src/quiz/schemas/question.schema';
 const MONGODB_URI =
-  'mongodb+srv://sourabhsahu:pwsourabhsahu@cluster0.knc9rzd.mongodb.net/clash-of-mind?retryWrites=true&w=majority&appName=Cluster0';
+  'mongodb+srv://yasharya:clash-of-minds@cluster0.ruoznmv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 async function seed() {
   await mongoose.connect(MONGODB_URI);
   console.log('Connected to MongoDB');
